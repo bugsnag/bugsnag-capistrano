@@ -60,7 +60,7 @@ namespace :bugsnag do
         :apiKey => api_key,
         :branch => "master",
         :revision => "{{head_long}}",
-        :releaseStage => heroku_env["RAILS_ENV"] || ENV["RAILS_ENV"] || "production"
+        :releaseStage => heroku_env["BUGSNAG_RELEASE_STAGE"] || heroku_env["RAILS_ENV"] || ENV["RAILS_ENV"] || "production"
       }
       repo = `git config --get remote.origin.url`.strip
       params[:repository] = repo unless repo.empty?
