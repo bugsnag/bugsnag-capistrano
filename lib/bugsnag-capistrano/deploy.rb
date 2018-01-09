@@ -46,6 +46,11 @@ module Bugsnag
 
         raise RuntimeError.new("No API key found when notifying of deploy") if !parameters["apiKey"] || parameters["apiKey"].empty?
 
+        if Gem::Version.new(Bugsnag::VERSION).release >= Gem::Version.new('6.0.0')
+          payload_string = parameters
+        else
+          payload_string = ::JSON.dump(parameters)
+        end
 
         payload_string = ::JSON.dump(parameters)
         Bugsnag::Delivery::Synchronous.deliver(endpoint, payload_string, configuration)
