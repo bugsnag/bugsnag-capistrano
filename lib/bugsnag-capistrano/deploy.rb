@@ -30,7 +30,7 @@ module Bugsnag
         end
 
         if Gem::Version.new(Bugsnag::VERSION).release >= Gem::Version.new('6.0.0')
-          endpoint = configuration.endpoint
+          endpoint = opts[:endpoint].nil? ? DEFAULT_DEPLOY_ENDPOINT : configuration.endpoint
         else
           endpoint = (configuration.use_ssl ? "https://" : "http://") + configuration.endpoint
         end
