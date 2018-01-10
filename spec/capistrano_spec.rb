@@ -29,10 +29,10 @@ describe "bugsnag capistrano", :always do
   end
 
   let(:request) { JSON.parse(queue.pop) }
-  
+
   it "sends a deploy notification to the set endpoint" do
     ENV['BUGSNAG_ENDPOINT'] = "http://localhost:" + server.config[:Port].to_s + "/deploy"
-    
+
     Dir.chdir(example_path) do
       system(exec_string)
     end
@@ -49,6 +49,8 @@ describe "bugsnag capistrano", :always do
     ENV['BUGSNAG_REVISION'] = "test"
     ENV['BUGSNAG_APP_VERSION'] = "1"
     ENV['BUGSNAG_REPOSITORY'] = "test@repo.com:test/test_repo.git"
+    ENV['BUGSNAG_BUILDER'] = "testbuilder"
+    ENV['BUGSNAG_PROVIDER'] = "github"
 
     Dir.chdir(example_path) do
       system(exec_string)
@@ -57,9 +59,14 @@ describe "bugsnag capistrano", :always do
     payload = request()
     expect(payload["apiKey"]).to eq('this is a test key')
     expect(payload["releaseStage"]).to eq('test')
-    expect(payload["repository"]).to eq("test@repo.com:test/test_repo.git")
     expect(payload["appVersion"]).to eq("1")
-    expect(payload["revision"]).to eq("test")
+    expect(payload["sourceControl"]).to eq({
+      "repository" => "test@repo.com:test/test_repo.git",
+      "revision" => "test",
+      "provider" => "github"
+    })
+    expect(payload["builderName"]).to eq("testbuilder")
+    expect(payload["buildTool"]).to eq("bugsnag-capistrano")
   end
 end
 

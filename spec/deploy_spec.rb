@@ -23,9 +23,9 @@ describe Bugsnag::Capistrano::Deploy do
     after do
       Bugsnag.configuration.clear_request_data
     end
-    
+
     it "should call notify_with_bugsnag" do
-      expect(Bugsnag::Delivery::Synchronous).to receive(:deliver)
+      expect(Bugsnag::Capistrano::Deploy).to receive(:deliver)
       Bugsnag::Capistrano::Deploy.notify()
     end
   end

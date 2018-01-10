@@ -9,19 +9,21 @@ namespace :bugsnag do
     app_version = ENV["BUGSNAG_APP_VERSION"]
     revision = ENV["BUGSNAG_REVISION"]
     repository = ENV["BUGSNAG_REPOSITORY"]
-    branch = ENV["BUGSNAG_BRANCH"]
+    provider = ENV["BUGSNAG_PROVIDER"]
     endpoint = ENV["BUGSNAG_ENDPOINT"]
+    builder = ENV["BUGSNAG_BUILDER"]
 
     Rake::Task["load"].invoke unless api_key
-    
+
     Bugsnag::Capistrano::Deploy.notify({
       :api_key => api_key,
       :release_stage => release_stage,
       :app_version => app_version,
       :revision => revision,
       :repository => repository,
-      :branch => branch,
+      :provider => provider,
       :endpoint => endpoint,
+      :builder => builder,
     })
   end
 
@@ -60,13 +62,15 @@ namespace :bugsnag do
         :apiKey => api_key,
         :branch => "master",
         :revision => "{{head_long}}",
-        :releaseStage => heroku_env["BUGSNAG_RELEASE_STAGE"] || heroku_env["RAILS_ENV"] || ENV["RAILS_ENV"] || "production"
+        :releaseStage => heroku_env["BUGSNAG_RELEASE_STAGE"] || heroku_env["RAILS_ENV"] || ENV["RAILS_ENV"] || "production",
+        :provider => heroku_env["BUGSNAG_PROVIDER"],
+        :builder => heroku_env["BUGSNAG_BUILDER"] || %x(whoami)
       }
       repo = `git config --get remote.origin.url`.strip
       params[:repository] = repo unless repo.empty?
 
       # Add the hook
-      url = "https://notify.bugsnag.com/deploy?" + params.map {|k,v| "#{k}=#{v}"}.join("&")
+      url = "https://build.bugsnag.com?" + params.map {|k,v| "#{k}=#{v}"}.join("&")
       command = "heroku addons:add deployhooks:http --url=\"#{url}\""
       command += " --app #{ENV["HEROKU_APP"]}" if ENV["HEROKU_APP"]
 
