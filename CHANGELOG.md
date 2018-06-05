@@ -1,3 +1,10 @@
+## TBD
+
+### Fixes
+
+* Fixes a case where deployment notifications were delivered to an incorrect
+  endpoint, causing them to not appear on the dashboard timeline
+
 ## 1.1.1 (14-12-2017)
 
 ### Fixes

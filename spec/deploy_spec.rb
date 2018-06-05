@@ -25,14 +25,45 @@ describe Bugsnag::Capistrano::Deploy do
     end
     
     it "should call notify_with_bugsnag" do
-      expect(Bugsnag::Delivery::Synchronous).to receive(:deliver)
+      expect(Bugsnag::Delivery::Synchronous).to receive(:deliver).with(
+        "https://notify.bugsnag.com/deploy",
+        "{\"apiKey\":\"TEST_API_KEY\",\"releaseStage\":\"production\"}",
+        instance_of(Bugsnag::Configuration)
+      )
       Bugsnag::Capistrano::Deploy.notify()
+    end
+
+    context "provide custom endpoint" do
+      before do
+        Bugsnag.configure do |config|
+          config.endpoint = "http://localhost:56302"
+        end
+      end
+
+      after do
+        Bugsnag.configure do |config|
+          config.endpoint = nil
+        end
+      end
+
+      it "uses the custom endpoint" do
+        expect(Bugsnag::Delivery::Synchronous).to receive(:deliver).with(
+          "http://localhost:56302/deploy",
+          "{\"apiKey\":\"TEST_API_KEY\",\"releaseStage\":\"production\"}",
+          instance_of(Bugsnag::Configuration)
+        )
+        Bugsnag::Capistrano::Deploy.notify()
+      end
     end
   end
 
   describe "without notifier loadable", :without_notifier do
     it "should call notify_without bugsnag" do
-      expect(Bugsnag::Capistrano::Deploy).to receive(:deliver)
+      stub_request(:post, "https://notify.bugsnag.com/deploy").to_return(status:200, body: "")
+      expect(Bugsnag::Capistrano::Deploy).to receive(:deliver).with(
+        "https://notify.bugsnag.com/deploy",
+        "{\"apiKey\":\"test\"}"
+      )
       Bugsnag::Capistrano::Deploy.notify({:api_key => "test"})
     end
   end

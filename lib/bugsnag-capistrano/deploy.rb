@@ -30,9 +30,9 @@ module Bugsnag
         end
 
         if Gem::Version.new(Bugsnag::VERSION).release >= Gem::Version.new('6.0.0')
-          endpoint = configuration.endpoint
+          endpoint = configuration.endpoint + '/deploy'
         else
-          endpoint = (configuration.use_ssl ? "https://" : "http://") + configuration.endpoint
+          endpoint = (configuration.use_ssl ? "https://" : "http://") + configuration.endpoint + '/deploy'
         end
 
         parameters = {
