@@ -23,12 +23,12 @@ jobs:
     rvm: jruby-19mode
   - stage: test
     install: bundle _1.12.0_ install --with test bugsnag
-    rvm: jruby-19mode
+    rvm: jruby-9.1.17.0
   - stage: test
     install: bundle _1.12.0_ install --with test --without bugsnag
-    rvm: jruby-19mode
+    rvm: jruby-9.1.17.0
 
-  # Ruby 2.0.0
+    # Ruby 2.0.0
   - stage: test
     env: CAP_2_TEST=true
     install: bundle install --with test bugsnag --binstubs
