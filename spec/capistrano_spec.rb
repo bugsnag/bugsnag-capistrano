@@ -1,51 +1,27 @@
-require 'webmock/rspec'
-require 'rspec/expectations'
-require 'rspec/mocks'
-
-require 'webrick'
+require_relative './spec_helper'
 
 describe "bugsnag capistrano" do
+  server = Helpers::Server.new
 
-  server = nil
-  queue = Queue.new
-  cap_2 = ENV['CAP_2_TEST'] == 'true'
-  fixture_path = cap_2 ? '../examples/capistrano2' : '../examples/capistrano3'
-  exec_string = cap_2 ? 'bundle exec cap deploy' : 'bundle exec cap test deploy'
-  example_path = File.join(File.dirname(__FILE__), fixture_path)
-
-  before do
-    server = WEBrick::HTTPServer.new :Port => 0, :Logger => WEBrick::Log.new(STDOUT), :AccessLog => []
-    server.mount_proc '/deploy' do |req, res|
-      queue.push req.body
-      res.status = 200
-      res.body = "OK\n"
-    end
-    Thread.new{ server.start }
-  end
-
-  after do
-    server.stop
-    queue.clear
-  end
-
-  let(:request) { JSON.parse(queue.pop) }
+  before { server.start }
+  after { server.stop }
 
   it "sends a deploy notification to the set endpoint" do
-    ENV['BUGSNAG_ENDPOINT'] = "http://localhost:" + server.config[:Port].to_s + "/deploy"
+    ENV['BUGSNAG_ENDPOINT'] = server.url
     ENV['BUGSNAG_APP_VERSION'] = "1"
 
-    Dir.chdir(example_path) do
-      system(exec_string)
+    Dir.chdir(Helpers::Capistrano.example_path) do
+      system(Helpers::Capistrano.deploy_command)
     end
 
-    payload = request()
+    payload = server.last_request
     expect(payload["apiKey"]).to eq('YOUR_API_KEY')
     expect(payload["appVersion"]).to eq("1")
     expect(payload["releaseStage"]).to eq('production')
   end
 
   it "allows modifications of deployment characteristics" do
-    ENV['BUGSNAG_ENDPOINT'] = "http://localhost:" + server.config[:Port].to_s + "/deploy"
+    ENV['BUGSNAG_ENDPOINT'] = server.url
     ENV['BUGSNAG_API_KEY'] = "this is a test key"
     ENV['BUGSNAG_RELEASE_STAGE'] = "test"
     ENV['BUGSNAG_REVISION'] = "test"
@@ -54,11 +30,11 @@ describe "bugsnag capistrano" do
     ENV['BUGSNAG_SOURCE_CONTROL_PROVIDER'] = "github"
     ENV['BUGSNAG_AUTO_ASSIGN_RELEASE'] = 'true'
 
-    Dir.chdir(example_path) do
-      system(exec_string)
+    Dir.chdir(Helpers::Capistrano.example_path) do
+      system(Helpers::Capistrano.deploy_command)
     end
 
-    payload = request()
+    payload = server.last_request
     expect(payload["apiKey"]).to eq('this is a test key')
     expect(payload["releaseStage"]).to eq('test')
     expect(payload["appVersion"]).to eq("1")
@@ -69,4 +45,3 @@ describe "bugsnag capistrano" do
     expect(payload["autoAssignRelease"]).to eq(true)
   end
 end
-
