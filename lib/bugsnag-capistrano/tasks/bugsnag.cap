@@ -28,7 +28,7 @@ namespace :bugsnag do
           :metadata => fetch(:bugsnag_metadata),
           :release_stage => fetch(:bugsnag_env) || ENV["BUGSNAG_RELEASE_STAGE"] || fetch(:rails_env) || fetch(:stage) || "production",
           :revision => fetch(:current_revision, ENV["BUGSNAG_REVISION"]),
-          :repository => fetch(:bugsnag_repo_url, fetch(:repo_url, ENV["BUGSNAG_REPOSITORY"])),,
+          :repository => fetch(:bugsnag_repo_url, fetch(:repo_url, ENV["BUGSNAG_REPOSITORY"])),
           :source_control_provider => fetch(:bugsnag_source_control_provider, ENV["BUGSNAG_SOURCE_CONTROL_PROVIDER"]),
           :endpoint => fetch(:bugsnag_endpoint)
         })
