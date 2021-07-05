@@ -1,0 +1,34 @@
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+  specs:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version: ['2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '3.0']
+        use-capistrano-2: ['false']
+        include:
+          - ruby-version: '2.0'
+            use-capistrano-2: 'true'
+          - ruby-version: '2.1'
+            use-capistrano-2: 'true'
+
+    env:
+      BUNDLE_WITH: test
+      CAP_2_TEST: ${{ matrix.use-capistrano-2 }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+
+      - run: bundle info capistrano
+
+      - run: bundle exec rake spec

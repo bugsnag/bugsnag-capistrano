@@ -1,5 +1,4 @@
 # Bugsnag deploy tracking with Capistrano
-[![Build status](https://travis-ci.org/bugsnag/bugsnag-capistrano.svg?branch=master)](https://travis-ci.org/bugsnag/bugsnag-capistrano)
 
 Bugsnag Capistrano automatically notifies Bugsnag when you deploy your
 application with [Capistrano](https://github.com/capistrano/capistrano),
