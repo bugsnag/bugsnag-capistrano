@@ -64,7 +64,8 @@ bugsnag-capistrano.
 * Release to RubyGems
 
     ```
-    bundle exec rake release
+    gem build bugsnag-capistrano.gemspec
+    gem push bugsnag-capistrano-[version].gem
     ```
 
 * Update docs.bugsnag.com with any new content
