@@ -1,3 +1,11 @@
+## 2.1.0 (13-07-2021)
+
+### Enhancements
+
+* Allow using a Bugsnag-specific repo URL with a new `:bugsnag_repo_url` variable
+  | [#22](https://github.com/bugsnag/bugsnag-capistrano/pull/22)
+  | [Simon](https://github.com/stoivo)
+
 ## 2.0.0 (03-04-2018)
 
 Major changes have been made with the 2.0.0 release. For a full list please consult the [upgrading guide](https://github.com/bugsnag/bugsnag-capistrano/blob/master/UPGRADING.md).

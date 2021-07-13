@@ -1,10 +1,8 @@
-require 'webmock/rspec'
+require_relative './spec_helper'
+
 require 'rspec/expectations'
 require 'rspec/mocks'
-require 'logger'
-require 'json'
-
-require 'webrick'
+require 'webmock/rspec'
 
 require 'bugsnag-capistrano/release'
 
