@@ -12,7 +12,8 @@ group :test, optional: true do
   # WEBrick is no longer in the stdlib in Ruby 3.0
   gem 'webrick' if RUBY_VERSION >= '3.0.0'
   gem 'rexml', '< 3.2.5' if RUBY_VERSION == '2.0.0'
-
+  # psych 5.x changed safe_load signature, incompatible with RubyGems < 3.2.3 on older Rubies
+  gem 'psych', '< 5.0' if RUBY_VERSION < '2.6'
   # i18n added a call to Module#using in 1.3.0, which doesn't exist until Ruby 2.1
   gem 'i18n', '< 1.3.0' if RUBY_VERSION == '2.0.0'
 end
